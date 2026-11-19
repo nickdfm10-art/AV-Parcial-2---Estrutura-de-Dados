@@ -169,3 +169,29 @@ ResultadoDijkstra dijkstra(const Grafo& g, int origem, Criterio c) {
     }
     return r;
 }
+
+// Reconstroi a lista de arestas do caminho origem -> destino
+vector<int> caminhoArestas(const ResultadoDijkstra& r, int destino) {
+    vector<int> arestas;
+    for (int v = destino; r.anterior[v] != -1; v = r.anterior[v])
+        arestas.push_back(r.arestaAnt[v]);
+    reverse(arestas.begin(), arestas.end());
+    return arestas;
+}
+
+void imprimirCaminho(const Grafo& g, int origem, int destino, Criterio c) {
+    ResultadoDijkstra r = dijkstra(g, origem, c);
+    vector<int> arestas = caminhoArestas(r, destino);
+    double tot[3] = {0, 0, 0};
+    cout << "  Caminho: " << g.nomes[origem];
+    int atual = origem;
+    for (int id : arestas) {
+        const Aresta& a = g.arestas[id];
+        int prox = (a.u == atual) ? a.v : a.u;
+        cout << " -> " << g.nomes[prox] << " [" << a.transporte << "]";
+        for (int k = 0; k < 3; k++) tot[k] += a.peso[k];
+        atual = prox;
+    }
+    cout << "\n  Totais deste caminho: custo = " << tot[CUSTO] << " EUR | distancia = "
+         << tot[DISTANCIA] << " km | tempo = " << tot[TEMPO] << " h\n";
+}
