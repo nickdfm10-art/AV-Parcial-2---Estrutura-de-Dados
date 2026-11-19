@@ -195,3 +195,30 @@ void imprimirCaminho(const Grafo& g, int origem, int destino, Criterio c) {
     cout << "\n  Totais deste caminho: custo = " << tot[CUSTO] << " EUR | distancia = "
          << tot[DISTANCIA] << " km | tempo = " << tot[TEMPO] << " h\n";
 }
+
+// ----------------------------- Floyd-Warshall -------------------------
+// Matriz de adjacencia (peso direto) e matriz de caminhos minimos entre todos os pares
+vector<vector<double>> matrizDireta(const Grafo& g, Criterio c) {
+    vector<vector<double>> m(g.n, vector<double>(g.n, INF));
+    for (int i = 0; i < g.n; i++) m[i][i] = 0;
+    for (const Aresta& a : g.arestas) {
+        m[a.u][a.v] = a.peso[c];
+        m[a.v][a.u] = a.peso[c];
+    }
+    return m;
+}
+
+void imprimirMatriz(const Grafo& g, const vector<vector<double>>& m, const string& titulo) {
+    cout << "\n" << titulo << "\n";
+    cout << setw(11) << " ";
+    for (int j = 0; j < g.n; j++) cout << setw(10) << g.nomes[j].substr(0, 9);
+    cout << "\n";
+    for (int i = 0; i < g.n; i++) {
+        cout << setw(11) << g.nomes[i].substr(0, 10);
+        for (int j = 0; j < g.n; j++) {
+            if (m[i][j] == INF) cout << setw(10) << "-";
+            else cout << setw(10) << fixed << setprecision(1) << m[i][j];
+        }
+        cout << "\n";
+    }
+}
