@@ -231,3 +231,31 @@ void imprimirMatriz(const Grafo& g, const vector<vector<double>>& m, const strin
         cout << "\n";
     }
 }
+
+// ------------------------------- Kruskal -----------------------------
+struct UniaoBusca {                    // Union-Find com compressao de caminho
+    vector<int> pai, rk;
+    UniaoBusca(int n) : pai(n), rk(n, 0) { iota(pai.begin(), pai.end(), 0); }
+    int achar(int x) { return pai[x] == x ? x : pai[x] = achar(pai[x]); }
+    bool unir(int a, int b) {
+        a = achar(a); b = achar(b);
+        if (a == b) return false;      // ja estao no mesmo componente (formaria ciclo)
+        if (rk[a] < rk[b]) swap(a, b);
+        pai[b] = a;
+        if (rk[a] == rk[b]) rk[a]++;
+        return true;
+    }
+};
+
+vector<int> kruskal(const Grafo& g, Criterio c) {
+    vector<int> ordem(g.arestas.size());
+    iota(ordem.begin(), ordem.end(), 0);
+    stable_sort(ordem.begin(), ordem.end(), [&](int a, int b) {  // stable: empates em ordem de insercao
+        return g.arestas[a].peso[c] < g.arestas[b].peso[c];
+    });
+    UniaoBusca uf(g.n);
+    vector<int> agm;
+    for (int id : ordem)
+        if (uf.unir(g.arestas[id].u, g.arestas[id].v)) agm.push_back(id);
+    return agm;                         // n-1 arestas
+}
