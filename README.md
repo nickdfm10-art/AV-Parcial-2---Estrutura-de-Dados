@@ -172,7 +172,7 @@ Os resultados demonstram que a escolha de uma rota depende diretamente da priori
 
 **Ferramenta utilizada:** Claude (Anthropic).
 
-**Aplicação:** geração inicial do código C++, dos dados estimados do grafo, das figuras e dos slides da apresentação.
+**Aplicação:** geração inicial do código C++, dos dados estimados do grafo.
 
 **Responsabilidade:** o grupo revisou o material produzido e é responsável pela compreensão e explicação das estruturas de dados, algoritmos e decisões adotadas no projeto.
 
