@@ -272,3 +272,52 @@ void imprimirAGM(const Grafo& g, const vector<int>& agm, Criterio c) {
     cout << "  TOTAL da AGM por " << NOME_CRITERIO[c] << ": custo = " << tot[CUSTO]
          << " EUR | distancia = " << tot[DISTANCIA] << " km | tempo = " << tot[TEMPO] << " h\n";
 }
+
+// --------------------------------- main ------------------------------
+int main(int argc, char** argv) {
+    Grafo g = construirGrafo();
+    int origem = g.indice("Sao Paulo");
+    string nomeDestino = (argc > 1) ? argv[1] : "Berlim";
+    int destino = g.indice(nomeDestino);
+    if (destino < 0) { cerr << "Destino invalido: " << nomeDestino << "\n"; return 1; }
+
+    cout << fixed << setprecision(1);
+    cout << "=== GRAFO ORIGINAL ===\n";
+    cout << "Vertices: " << g.n << " | Arestas: " << g.arestas.size() << "\n";
+    cout << "Conexo? " << (ehConexo(g) ? "SIM" : "NAO") << " | Grau minimo: " << grauMinimo(g)
+         << " (requisito >= 3)\n\n";
+    for (int i = 0; i < g.n; i++) {
+        cout << g.nomes[i] << " (" << g.pais[i] << ") - grau " << g.adj[i].size() << "\n";
+        cout << "   Pontos: " << g.pontos[i] << "\n";
+        for (size_t k = 0; k < g.adj[i].size(); k++) {
+            int v = g.adj[i][k].first;
+            int id = g.adj[i][k].second;
+            const Aresta& a = g.arestas[id];
+            cout << "   -> " << setw(10) << left << g.nomes[v] << right << " custo=" << setw(4) << a.peso[CUSTO]
+                 << " EUR  dist=" << setw(5) << a.peso[DISTANCIA] << " km  tempo=" << setw(4)
+                 << a.peso[TEMPO] << " h  [" << a.transporte << "]\n";
+        }
+    }
+
+    cout << "\n=== MATRIZES DE ADJACENCIA (peso direto; '-' = sem ligacao) ===";
+    for (int c = 0; c < 3; c++)
+        imprimirMatriz(g, matrizDireta(g, (Criterio)c), string("Matriz de ") + NOME_CRITERIO[c]);
+
+    cout << "\n=== CAMINHOS MINIMOS (Dijkstra): " << g.nomes[origem] << " -> " << g.nomes[destino] << " ===\n";
+    for (int c = 0; c < 3; c++) {
+        cout << "\nMenor " << NOME_CRITERIO[c] << ":\n";
+        imprimirCaminho(g, origem, destino, (Criterio)c);
+    }
+
+    cout << "\n=== FLOYD-WARSHALL: menor valor entre TODOS os pares ===";
+    for (int c = 0; c < 3; c++)
+        imprimirMatriz(g, floydWarshall(matrizDireta(g, (Criterio)c)),
+                       string("Caminhos minimos por ") + NOME_CRITERIO[c]);
+
+    cout << "\n\n=== ARVORE GERADORA MINIMA (Kruskal) ===\n";
+    for (int c = 0; c < 3; c++) {
+        cout << "\nAGM minimizando " << NOME_CRITERIO[c] << (c == CUSTO ? "  <-- rota otimizada geral" : "") << ":\n";
+        imprimirAGM(g, kruskal(g, (Criterio)c), (Criterio)c);
+    }
+    return 0;
+}
