@@ -110,3 +110,26 @@ Grafo construirGrafo() {
     g.addAresta(ber, rom,  95, 1180,  4.8, "aviao");
     return g;
 }
+
+// ------------------------------ Validacoes ---------------------------
+// BFS para verificar se o grafo e conexo
+bool ehConexo(const Grafo& g) {
+    vector<bool> vis(g.n, false);
+    queue<int> q;
+    q.push(0); vis[0] = true;
+    int cont = 1;
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        for (size_t k = 0; k < g.adj[u].size(); k++) {
+            int v = g.adj[u][k].first;
+            if (!vis[v]) { vis[v] = true; cont++; q.push(v); }
+        }
+    }
+    return cont == g.n;
+}
+
+int grauMinimo(const Grafo& g) {
+    int m = (int)1e9;
+    for (int i = 0; i < g.n; i++) m = min(m, (int)g.adj[i].size());
+    return m;
+}
