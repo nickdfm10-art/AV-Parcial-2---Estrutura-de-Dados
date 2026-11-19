@@ -133,3 +133,39 @@ int grauMinimo(const Grafo& g) {
     for (int i = 0; i < g.n; i++) m = min(m, (int)g.adj[i].size());
     return m;
 }
+
+// ------------------------------- Dijkstra ----------------------------
+struct ResultadoDijkstra {
+    vector<double> dist;
+    vector<int> anterior;   // vertice anterior no caminho minimo
+    vector<int> arestaAnt;  // aresta usada para chegar no vertice
+};
+
+ResultadoDijkstra dijkstra(const Grafo& g, int origem, Criterio c) {
+    ResultadoDijkstra r;
+    r.dist.assign(g.n, INF);
+    r.anterior.assign(g.n, -1);
+    r.arestaAnt.assign(g.n, -1);
+    // fila de prioridade de minimo: (distancia acumulada, vertice)
+    priority_queue<pair<double,int>, vector<pair<double,int>>, greater<pair<double,int> > > pq;
+    r.dist[origem] = 0;
+    pq.push({0, origem});
+    while (!pq.empty()) {
+        double d = pq.top().first;
+        int u = pq.top().second;
+        pq.pop();
+        if (d > r.dist[u]) continue;           // entrada desatualizada
+        for (size_t k = 0; k < g.adj[u].size(); k++) {
+            int v = g.adj[u][k].first;
+            int id = g.adj[u][k].second;
+            double nd = d + g.arestas[id].peso[c];
+            if (nd < r.dist[v]) {              // relaxamento
+                r.dist[v] = nd;
+                r.anterior[v] = u;
+                r.arestaAnt[v] = id;
+                pq.push({nd, v});
+            }
+        }
+    }
+    return r;
+}
