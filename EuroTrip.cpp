@@ -259,3 +259,16 @@ vector<int> kruskal(const Grafo& g, Criterio c) {
         if (uf.unir(g.arestas[id].u, g.arestas[id].v)) agm.push_back(id);
     return agm;                         // n-1 arestas
 }
+
+void imprimirAGM(const Grafo& g, const vector<int>& agm, Criterio c) {
+    double tot[3] = {0, 0, 0};
+    for (int id : agm) {
+        const Aresta& a = g.arestas[id];
+        cout << "  " << setw(10) << left << g.nomes[a.u] << " -- " << setw(10) << g.nomes[a.v]
+             << right << "  custo=" << setw(4) << a.peso[CUSTO] << "  dist=" << setw(5) << a.peso[DISTANCIA]
+             << "  tempo=" << setw(4) << a.peso[TEMPO] << "  [" << a.transporte << "]\n";
+        for (int k = 0; k < 3; k++) tot[k] += a.peso[k];
+    }
+    cout << "  TOTAL da AGM por " << NOME_CRITERIO[c] << ": custo = " << tot[CUSTO]
+         << " EUR | distancia = " << tot[DISTANCIA] << " km | tempo = " << tot[TEMPO] << " h\n";
+}
